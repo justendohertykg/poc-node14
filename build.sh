@@ -1,13 +1,11 @@
 #!/bin/sh
 set -e
 
-#echo "removing old kg-node-14 docker container"
-#docker stop kg-docker-nodejs-14 || true 
-#docker rm kg-docker-nodejs-14 || true 
-#docker system prune --all -f || true
+echo "about to login to AWS ECR"
+aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_NUMBER.dkr.ecr.eu-west-1.amazonaws.com
 
-#echo "cleaning up any kg-docker-nodejs-14 containers"
-#docker rm -f $(docker ps -aq) || true 
+#docker build -t kg-docker-nodejs-14 .
+docker build -t $CONTAINER_TAG_NAME .
 
-#echo "building new kg-docker-nodejs-14 docker container"
-docker build -t kg-docker-nodejs-14 .
+echo "push to ECR"
+docker push $CONTAINER_REPOSITORY_URI:$CONTAINER_TAG_NAME
